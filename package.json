@@ -1,0 +1,32 @@
+{
+  "name": "sgitg-cli",
+  "version": "0.0.29",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "publishConfig": {
+    "registry": "https://repo.crec.cn/repository/npm-crecg/"
+  },
+  "keywords": [
+    "vue",
+    "sgitg-cli"
+  ],
+  "author": "bq.song",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "commander": "^7.2.0",
+    "handlebars": "^4.7.7",
+    "inquirer": "^8.0.0",
+    "ora": "^5.4.0",
+    "process": "^0.11.10"
+  },
+  "bin": {
+    "sgitg": "./bin/sgitg",
+    "sgitg-add": "bin/sgitg-add",
+    "sgitg-delete": "bin/sgitg-delete",
+    "sgitg-list": "bin/sgitg-list",
+    "sgitg-init": "bin/sgitg-init"
+  }
+}

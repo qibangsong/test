@@ -1,0 +1,63 @@
+{
+  "mobile": {
+    "name": "mobile",
+    "description": "研发平台移动应用模板，内含统一认证，可配jssdk签名配置",
+    "url": "http://git.crec.cn/crec-gloabl/frontend-mobile-base.git",
+    "branch": "master",
+    "isAPI": true,
+    "isPlatForm": true
+  },
+  "mobile-common": {
+    "name": "mobile-common",
+    "description": "纯净移动端模板，非研发平台项目，不包含统一认证等内容",
+    "url": "http://git.crec.cn/crec-gloabl/frontend-mobile-base.git",
+    "branch": "common-branch",
+    "isPlatForm": false
+  },
+  "pc-base": {
+    "name": "pc-base",
+    "description": "PC端应用模板",
+    "url": "http://git.crec.cn/crec-gloabl/pc-template-base.git",
+    "branch": "v1.0.9-20230530",
+    "isPlatForm": true
+  },
+  "pc-portal-base": {
+    "name": "pc-portal-base",
+    "description": "PC端主应用模版",
+    "url": "http://git.crec.cn/crec-gloabl/pc-portal-base.git",
+    "branch": "v1.0.9-20230530",
+    "isPlatForm": true
+  },
+  "weapp-base": {
+    "name": "weapp-base",
+    "description": "微信小程序应用模版",
+    "url": "http://git.crec.cn/crec-gloabl/crec-weapp-base.git",
+    "branch": "master",
+    "isPlatForm": false,
+    "isSimple": true
+  },
+  "crec-demo": {
+    "name": "crec-demo",
+    "description": "PC端样板工程",
+    "url": "http://git.crec.cn/crec-gloabl/crec-demo-frentend.git",
+    "branch": "master",
+    "isPlatForm": true,
+    "isSimple": true
+  },
+  "demo-crec-ui": {
+    "name": "demo-crec-ui",
+    "description": "crec-ui组件demo",
+    "url": "http://git.crec.cn/crec-gloabl/crec-ui-demo-frontend.git",
+    "branch": "master",
+    "isPlatForm": true,
+    "isSimple": true
+  },
+  "demo-crec-mobile-ui": {
+    "name": "demo-crec-mobile-ui",
+    "description": "crec-mobile-ui 组件demo",
+    "url": "http://git.crec.cn/crec-gloabl/crec-mobile-demo-frontend.git",
+    "branch": "master",
+    "isPlatForm": true,
+    "isSimple": true
+  }
+}

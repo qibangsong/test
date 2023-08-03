@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+const chalk = require('chalk')
+const {
+  versions
+} = require('process')
+
+
+// 定义当前版本
+// 定义使用方法
+// 定义四个指令
+program
+  .version(require('../package').version, '-v, --version')
+  .description('中国中铁前端脚手架工具')
+  .usage('<command> [options]')
+  .command('add', '添加一个模板').alias('a')
+  .command('delete', '删除一个模板').alias('d')
+  .command('list', '列出所有模板').alias('ls')
+  .command('init', '根据一个模板生成一个项目').alias('i')
+const v = versions.node.split('.')
+if (Number(v[0]) < 14 || Number(v[0]) === 15 || Number(v[0]) === 17) {
+  console.log(('\n❌ 当前node版本是' + chalk.red.underline.bold(versions.node) + '，请升级您的node版本，推荐使用长期稳定版本('+chalk.red.underline.bold('LTS')+')且('+chalk.red.underline.bold('大于等于14')+')系列的版本\n'))
+} else {
+  console.log(('\n✅ 当前node版本是' + chalk.red.underline.bold(versions.node) + '，推荐使用长期稳定版本('+chalk.red.underline.bold('LTS')+')且('+chalk.red.underline.bold('大于等于14')+')系列的版本\n'))
+  // 解析命令行参数
+  program.parse(process.argv)
+}

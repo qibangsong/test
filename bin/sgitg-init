@@ -1,0 +1,188 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+const chalk = require('chalk')
+const ora = require('ora')
+const tplObj = require(`${__dirname}/../template`)
+const exec = require('child_process').exec
+// const download = require('download-git-repo')
+const fs = require('fs')
+const handlebars = require('handlebars')
+const inquirer = require('inquirer')
+
+// program.usage('<template-name> [project-name]')
+program.parse(process.argv)
+let templateName = ''
+let projectName = ''
+let templates = []
+for (let i in tplObj) {
+  templates.push(tplObj[i])
+}
+let templateQuestion = [
+  {
+    type: 'list',
+    name: 'templateName',
+    message: '选择模板',
+    choices: templates
+  },
+  {
+    type: 'inpute',
+    name: 'name',
+    message: '请输入应用英文名称',
+    validate(val) {
+      if (val === '') return '应用英文名称不能为空'
+      return true
+    }
+  },
+  {
+    type: 'inpute',
+    name: 'cname',
+    message: '请输入应用中文名称',
+    validate(val) {
+      if (val === '') return '应用中文名称不能为空'
+      return true
+    },
+    when: function (answers) {
+      return !tplObj[answers.templateName].isSimple
+    }
+  },
+  {
+    type: 'inpute',
+    name: 'clientId',
+    message: '请输入应用clientId',
+    default: 'pgptyb',
+    when: function (answers) {
+      return !tplObj[answers.templateName].isSimple
+    }
+  },
+  {
+    type: 'inpute',
+    name: 'appId',
+    message: '请输入研发平台应用appId',
+    default: '125',
+    when: function (answers) {
+      return tplObj[answers.templateName].isPlatForm || false
+    }
+  },
+  {
+    type: 'inpute',
+    name: 'description',
+    message: '请输入应用简介'
+  },
+  {
+    type: 'inpute',
+    name: 'author',
+    message: '请输入作者名称'
+  },
+  {
+    type: 'inpute',
+    name: 'auth_pattern',
+    message: '请输入授权模式（1.标准模式，2.分级授权模式）',
+    default: 1,
+    validate(val) {
+      if (val === '') return '授权模式不能为空'
+      return true
+    },
+    when: function (answers) {
+      return tplObj[answers.templateName].isPlatForm || false
+    }
+  },
+  {
+    type: 'confirm',
+    message: '是否使用企业微信sdk？',
+    name: 'isSDK',
+    when: function (answers) {
+      return tplObj[answers.templateName].isAPI || false
+    }
+  },
+  {
+    type: 'inpute',
+    name: 'agentId',
+    message: '请输入e通agentId',
+    validate(val) {
+      if (val === '') return 'e通agentId不能为空!'
+      return true
+    },
+    when: function (answers) {
+      return answers.isSDK
+    },
+    default: '1000220'
+  },
+  {
+    type: 'inpute',
+    name: 'secret',
+    message: '请输入e通secret',
+    validate(val) {
+      if (val === '') return 'e通secret不能为空!'
+      return true
+    },
+    when: function (answers) {
+      return answers.isSDK
+    },
+    default: 'C4dcUMMG18VYDY_mWZsXxax_X7AETOXaS3Dr5FX6UB0'
+  }
+]
+let downloadProject = (answers) => {
+  templateName = answers.templateName
+  projectName = answers.name
+  url = tplObj[templateName].url
+  const branch = tplObj[templateName].branch || 'master'
+  // git命令，远程拉取项目并自定义项目名
+  let cmdStr = `git clone -b ${branch} --depth=1 ${url} ${projectName}`
+
+  console.log(chalk.white('\n 中国中铁前端基础代码正在生成中...'))
+  // 出现加载图标
+  const spinner = ora('下载中...')
+  spinner.start()
+  exec(cmdStr, (error, stdout, stderr) => {
+    if (error) {
+      spinner.fail()
+      console.log(chalk.red(`\n 生成失败。 ${error}`))
+      process.exit()
+    }
+    // 删除.git文件夹
+    removeFileDir(`./${projectName}/.git`)
+    spinner.succeed()
+    console.log(chalk.green('\n√ 下载完成! \n'))
+    // 解析模板，进行数据拼装
+    // inquirer.prompt(tempQuestion).then((answers) => {
+    templateTo(`${projectName}/package.json`, answers)
+    templateTo(`${projectName}/.env`, answers)
+    templateTo(`${projectName}/src/views/user/Index.vue`, answers)
+    templateTo(`${projectName}/project.config.json`, answers)
+
+    console.log(chalk.green('\n√ 前端基础代码配置生成完成!'))
+    console.log('\n让我们开始开发吧')
+    console.log(`\ncd ${projectName}  yarn install \n`)
+    process.exit()
+    // })
+  })
+}
+// 当没有输入参数的时候给个提示
+if (program.args.length < 1) {
+  inquirer.prompt(templateQuestion).then((answer) => {
+    downloadProject(answer)
+  })
+}
+
+const removeFileDir = (path) => {
+  var files = fs.readdirSync(path)
+  for (let item of files) {
+    var stats = fs.statSync(`${path}/${item}`)
+    if (stats.isDirectory()) {
+      removeFileDir(`${path}/${item}`)
+    } else {
+      fs.unlinkSync(`${path}/${item}`)
+    }
+  }
+  fs.rmdirSync(path)
+}
+
+const templateTo = (packagePath, answers) => {
+  try {
+    fs.statSync(packagePath)
+    const packageContent = fs.readFileSync(packagePath, 'utf8')
+    const packageResult = handlebars.compile(packageContent)(answers)
+    fs.writeFileSync(packagePath, packageResult)
+  } catch (e) {}
+}

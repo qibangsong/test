@@ -1,0 +1,82 @@
+#!/usr/bin/env node
+
+// 交互式命令行
+const inquirer = require('inquirer')
+// 修改控制台字符串的样式
+const chalk = require('chalk')
+// node 内置文件模块
+const fs = require('fs')
+// 读取根目录下的 template.json
+const tplObj = require(`${__dirname}/../template.json`)
+
+// 自定义交互式命令行的问题及简单的校验
+let question = [
+  {
+    name: "name",
+    type: 'input',
+    message: "请输入模板名称",
+    validate (val) {
+      if (val === '') {
+        return '模板名称不能为空!'
+      } else if (tplObj[val]) {
+        return '模板已经存在!'
+      } else {
+        return true
+      }
+    }
+  },
+  {
+    name: "description",
+    type: 'input',
+    message: "请输入模板描述",
+    validate (val) {
+      if (val === '') return '模板描述不能为空!'
+      return true
+    }
+  },
+  {
+    name: "url",
+    type: 'input',
+    message: "请输入模板地址",
+    validate (val) {
+      if (val === '') return '模板地址不能为空!'
+      return true
+    }
+  },
+  {
+    name: "branch",
+    type: 'input',
+    message: "请输入模板分支",
+    default: 'master'
+  },
+  {
+    name: "confirm",
+    type: 'isPlatForm',
+    message: "是否使用研发平台？",
+    default: true
+  },
+  {
+    type: 'confirm',
+    name: 'isAPI',
+    message: '是否需要使用微信API？',
+  }
+]
+
+inquirer
+  .prompt(question).then(answers => {
+    // answers 就是用户输入的内容，是个对象
+    let { name, url } = answers;
+    // 过滤 unicode 字符
+    answers.url = url.replace(/[\u0000-\u0019]/g, '')
+    // 过滤 unicode 字符
+    tplObj[name] = answers
+    // 把模板信息写入 template.json 文件中
+    fs.writeFile(`${__dirname}/../template.json`, JSON.stringify(tplObj), 'utf-8', err => {
+      if (err) console.log(err)
+      console.log('\n')
+      console.log(chalk.green('添加模板成功!\n'))
+      console.log(chalk.grey('最新的模板列表是: \n'))
+      console.table(tplObj)
+      console.log('\n')
+    })
+  })

@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+const program = require('commander')
+const tplObj = require(`${__dirname}/../template`)
+
+program.usage('<index>')
+program.parse(process.argv)
+let newTplObj = []
+for (let k in tplObj) {
+    newTplObj.push({ name: k, description: tplObj[k].description })
+}
+// 当没有输入参数的时候给个提示
+if (program.args.length < 1) {
+    console.table(newTplObj)
+} else {
+    const index = program.args[0]
+    if (tplObj[index]) {
+        console.table(tplObj[index])
+    }
+    if (newTplObj[index]) {
+        const objName = newTplObj[index].name
+        console.table(tplObj[objName])
+    }
+}
